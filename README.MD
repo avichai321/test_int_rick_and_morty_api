@@ -7,8 +7,8 @@ https://localhost/8080
 
 there is two sub webs
 
-/fetch_char = who represent the results from the api
-/healthcheck = who show the server status
+* /fetch_char = who represent the results from the api
+* /healthcheck = who show the server status
 
 # Repository structure
 
@@ -18,5 +18,4 @@ The main files in this repository are:
 
 # Created By
 
-Avichai Dahan 
-course May 23
+Avichai Dahan course May 23
