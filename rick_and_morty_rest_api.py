@@ -1,12 +1,28 @@
 #!/usr/bin/python
 
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify ,render_template_string
 import requests
 import csv
 
 app = Flask(__name__)
 
 api_endpoint = "https://rickandmortyapi.com/api/character"
+
+@app.route('/')
+def home():
+    return render_template_string('''
+    <html>
+    <head>
+        <title>Flask App</title>
+    </head>
+    <body>
+        <h1>Welcome to Rick and Morty api app</h1>
+        <h2>Made by Avichai Dahan</h2>
+        <button onclick="window.location.href='/healthcheck';">Health Check</button>
+        <button onclick="window.location.href='/fetch_characters';">Fetch Characters</button>
+    </body>
+    </html>
+    ''')
 
 def get_accurate_list(data_list):
     resulted_list = []
@@ -63,4 +79,4 @@ def healthcheck():
     return jsonify({"status": "Server is running"}), 200
 
 if __name__ == '__main__':
-    app.run(debug=True, host="0.0.0.0", port=8080)
+    app.run(port=8080)

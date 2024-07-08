@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rick-and-morty-deploy
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: rick_and_morty_rest_api
+  template:
+    metadata:
+      labels:
+        app: rick_and_morty_rest_api
+    spec:
+      containers:
+      - name: rick-and-morty-avicii-test
+        image: avichai321/rick_and_morty_avicii:2
+        ports:
+        - containerPort: 8080
