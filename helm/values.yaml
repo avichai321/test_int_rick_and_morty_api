@@ -1,0 +1,33 @@
+replicaCount: 2
+
+image:
+  repository: avichai321/rick_and_morty_avicii
+  tag: 4
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  hosts:
+    - host: avicii.local
+      paths:
+        - path: /
+          pathType: Prefix
+          serviceName: rick-and-morty-app-service 
+          servicePort: 80 
+        - path: /fetch_char
+          pathType: Exact
+          serviceName: rick-and-morty-app-service 
+          servicePort: 80 
+        - path: /healthcheck
+          pathType: Exact
+          servicePort: 80
+
+
+resources: {}
+nodeSelector: {}
+tolerations: []
+affinity: []

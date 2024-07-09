@@ -1,0 +1,5 @@
+apiVersion: v2
+name: rick-and-morty-app
+description: A Helm chart for Rick And Morty App api test
+version: 0.1.0
+appVersion: "1.0"
