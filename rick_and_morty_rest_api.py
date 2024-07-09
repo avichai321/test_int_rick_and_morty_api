@@ -4,11 +4,11 @@ from flask import Flask, request, jsonify ,render_template_string
 import requests
 import csv
 
-app = Flask(__name__)
+rick_and_morty = Flask(__name__)
 
 api_endpoint = "https://rickandmortyapi.com/api/character"
 
-@app.route('/')
+@rick_and_morty.route('/')
 def home():
     return render_template_string('''
     <html>
@@ -33,7 +33,7 @@ def get_accurate_list(data_list):
                 resulted_list.append(d)
     return resulted_list
 
-@app.route('/fetch_char', methods=['GET'])
+@rick_and_morty.route('/fetch_char', methods=['GET'])
 def fetch_char():
     main_params = {
         'status': 'Alive',
@@ -74,9 +74,9 @@ def fetch_char():
     except requests.exceptions.RequestException as err:
         return jsonify({"error": f"Oops: Something Else: {err}"}), 500
 
-@app.route('/healthcheck', methods=['GET'])
+@rick_and_morty.route('/healthcheck', methods=['GET'])
 def healthcheck():
     return jsonify({"status": "Server is running"}), 200
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0',port=8080)
+    rick_and_morty.run(host='0.0.0.0', port=8080)

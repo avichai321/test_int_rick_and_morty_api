@@ -2,30 +2,30 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: rick-and-morty-ingress
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
+  namespace: default
 spec:
   rules:
-    - http:
-        paths:
-        - path: /
-          pathType: Prefix
-          backend:
-            service:
-              name: rick-and-morty-service
-              port:
-                number: 80
-        - path: /fetch_char
-          pathType: Prefix
-          backend:
-            service:
-              name: rick-and-morty-service
-              port:
-                number: 80
-        - path: /healthcheck
-          pathType: Prefix
-          backend:
-            service:
-              name: rick-and-morty-service
-              port:
-                number: 80
+  - host: avicii.local
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: rick-and-morty-service
+            port:
+              number: 80
+      - path: /fetch_char
+        pathType: Exact
+        backend:
+          service:
+            name: rick-and-morty-service
+            port:
+              number: 80
+      - path: /healthcheck
+        pathType: Exact
+        backend:
+          service:
+            name: rick-and-morty-service
+            port:
+              number: 80
