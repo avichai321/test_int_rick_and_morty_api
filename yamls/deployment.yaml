@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
       - name: rick-and-morty-avicii-test
-        image: avichai321/rick_and_morty_avicii:2
+        image: avichai321/rick_and_morty_avicii:1
         ports:
         - containerPort: 8080

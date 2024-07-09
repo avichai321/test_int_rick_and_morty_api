@@ -6,27 +6,26 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
-  - host: avicii-rick-and-morty.local
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: rick-and-morty-service
-            port:
-              number: 80
-      - path: /fetch_char
-        pathType: Prefix
-        backend:
-          service:
-            name: rick-and-morty-service
-            port:
-              number: 80
-      - path: /healthcheck
-        pathType: Prefix
-        backend:
-          service:
-            name: rick-and-morty-service
-            port:
-              number: 80
+    - http:
+        paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: rick-and-morty-service
+              port:
+                number: 80
+        - path: /fetch_char
+          pathType: Prefix
+          backend:
+            service:
+              name: rick-and-morty-service
+              port:
+                number: 80
+        - path: /healthcheck
+          pathType: Prefix
+          backend:
+            service:
+              name: rick-and-morty-service
+              port:
+                number: 80

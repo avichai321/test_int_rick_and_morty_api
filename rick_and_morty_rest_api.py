@@ -19,7 +19,7 @@ def home():
         <h1>Welcome to Rick and Morty api app</h1>
         <h2>Made by Avichai Dahan</h2>
         <button onclick="window.location.href='/healthcheck';">Health Check</button>
-        <button onclick="window.location.href='/fetch_characters';">Fetch Characters</button>
+        <button onclick="window.location.href='/fetch_char';">Fetch Characters</button>
     </body>
     </html>
     ''')
@@ -79,4 +79,4 @@ def healthcheck():
     return jsonify({"status": "Server is running"}), 200
 
 if __name__ == '__main__':
-    app.run(port=8080)
+    app.run(host='0.0.0.0',port=8080)
