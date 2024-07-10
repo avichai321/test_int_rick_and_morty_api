@@ -2,7 +2,7 @@ replicaCount: 2
 
 image:
   repository: avichai321/rick_and_morty_avicii
-  tag: 4
+  tag: 6
   pullPolicy: IfNotPresent
 
 service:
@@ -11,23 +11,33 @@ service:
 
 ingress:
   enabled: true
-  hosts:
-    - host: avicii.local
-      paths:
-        - path: /
-          pathType: Prefix
-          serviceName: rick-and-morty-app-service 
-          servicePort: 80 
-        - path: /fetch_char
-          pathType: Exact
-          serviceName: rick-and-morty-app-service 
-          servicePort: 80 
-        - path: /healthcheck
-          pathType: Exact
-          servicePort: 80
+  host: avicii.local
+      
+serviceName: rick-and-morty-service
+deployName: rick-and-morty-deploy
+ingressName: rick-and-morty-ingress
 
+paths:
+  pathHome:
+    path: /
+    pathType: Prefix
+  pathChar:
+    path: /fetch_char
+    pathType: Exact
+  pathHealth:
+    path: /healthcheck
+    pathType: Exact
 
-resources: {}
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
 nodeSelector: {}
+
 tolerations: []
-affinity: []
+
+affinity: {}

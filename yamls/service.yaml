@@ -4,7 +4,7 @@ metadata:
   name: rick-and-morty-service
 spec:
   selector:
-    app: rick_and_morty_rest_api
+    app: rick-and-morty-rest-api
   ports:
     - protocol: TCP
       port: 80

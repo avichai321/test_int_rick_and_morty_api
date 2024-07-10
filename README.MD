@@ -5,7 +5,7 @@ this is also a test from int collage
 in the api just the python code:
 https://localhost/8080
 
-there is two sub webs
+there is two sub endpoints
 
 * /fetch_char = who represent the results from the api
 * /healthcheck = who show the server status
@@ -26,6 +26,13 @@ in order to build the app in k8s or minikube you need to use the 3 yamls
 * `ingress` who give you the app that you can see her in http port with clusterIP
 
 deploy the yaml in the current order
+
+# helm Chart
+
+the application is also can deploy with helm chart
+
+* the helm chart tgz file is also in the folder you can deploy it with `helm install app ./rick-and-morty-rest-api-0.1.0.tgz`
+* the app will open in browser in http port 80 like the yamls deploy 
 
 # Created By
 

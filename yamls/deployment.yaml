@@ -6,14 +6,14 @@ spec:
   replicas: 2
   selector:
     matchLabels:
-      app: rick_and_morty_rest_api
+      app: rick-and-morty-rest-api
   template:
     metadata:
       labels:
-        app: rick_and_morty_rest_api
+        app: rick-and-morty-rest-api
     spec:
       containers:
       - name: rick-and-morty-avicii-test
-        image: avichai321/rick_and_morty_avicii:4
+        image: avichai321/rick_and_morty_avicii:6
         ports:
         - containerPort: 8080

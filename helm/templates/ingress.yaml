@@ -2,21 +2,31 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ .Release.Name }}-{{ .Chart.Name }}
+  name: {{ .Values.ingressName }}
 spec:
   rules:
-    {{- range .Values.ingress.hosts }}
-    - host: {{ .host | quote }}
+    - host: {{ .Values.ingress.host }}
       http:
         paths:
-          {{- range .paths }}
-          - path: {{ .path }}
-            pathType: {{ .pathType }}
+          - path: {{ .Values.paths.pathHome.path }}
+            pathType: {{ .Values.paths.pathHome.pathType }}
             backend:
               service:
-                name: {{ .serviceName }}
+                name: {{ .Values.serviceName }} 
                 port: 
-                  number: {{ .servicePort }}
-          {{- end }}
-    {{- end }}
-{{- end }}
+                  number: {{ .Values.service.port }}
+          - path: {{ .Values.paths.pathChar.path }}
+            pathType: {{ .Values.paths.pathChar.pathType }}
+            backend:
+              service:
+                name: {{ .Values.serviceName }} 
+                port: 
+                  number: {{ .Values.service.port }}
+          - path: {{ .Values.paths.pathHealth.path}}
+            pathType: {{ .Values.paths.pathHealth.pathType }}
+            backend:
+              service:
+                name: {{ .Values.serviceName }} 
+                port: 
+                  number: {{ .Values.service.port }}
+{{- end -}}

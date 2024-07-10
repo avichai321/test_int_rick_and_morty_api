@@ -1,5 +1,8 @@
 apiVersion: v2
-name: rick-and-morty-app
+name: rick-and-morty-rest-api
 description: A Helm chart for Rick And Morty App api test
 version: 0.1.0
 appVersion: "1.0"
+serviceName: rick-and-morty-service
+deployName: rick-and-morty-deploy
+ingressName: rick-and-morty-ingress
