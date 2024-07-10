@@ -9,13 +9,7 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
-
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v1
-
+    steps:   
     - name: Set up k3s
       run: |
         curl -sfL https://get.k3s.io | sh -s - --docker
@@ -40,15 +34,15 @@ jobs:
         run: kubectl rollout status deployment/rick-and-morty-deploy --timeout=2m
 
       - name: Test Fetch Characters Endpoint
-      run: |
-        endpoint=$(kubectl get svc rick-and-morty-app -o=jsonpath='{.status.loadBalancer.ingress[0].hostname}')/fetch_char
-        response=$(curl -s -o /dev/null -w "%{http_code}" $endpoint)
-        if [ $response -eq 200 ]; then
-          echo "Fetch Characters endpoint is reachable"
-        else
-          echo "Fetch Characters endpoint returned status $response"
-          exit 1
-        fi
+        run: |
+          endpoint=$(kubectl get svc rick-and-morty-app -o=jsonpath='{.status.loadBalancer.ingress[0].hostname}')/fetch_char
+          response=$(curl -s -o /dev/null -w "%{http_code}" $endpoint)
+          if [ $response -eq 200 ]; then
+            echo "Fetch Characters endpoint is reachable"
+          else
+            echo "Fetch Characters endpoint returned status $response"
+            exit 1
+          fi
 
       - name: Test Health Check Endpoint
         run: |
