@@ -1,0 +1,50 @@
+name: Deploy to k8s gitjub
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+
+    - name: Set up k3s
+      run: |
+        curl -sfL https://get.k3s.io | sh -s - --docker
+        sudo chmod 644 /etc/rancher/k3s/k3s.yaml
+        export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        push: true
+        tags: ${{ secrets.DOCKER_USERNAME }}/rick_and_morty_avicii:latest
+
+    - name: Install Helm
+      run: |
+        curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+
+
+    - name: Deploy to Kubernetes
+      run: |
+        helm upgrade --install rick-and-morty-rest-api ./helm/rick-and-morty-rest-api \
+          --set image.repository=${{ secrets.DOCKER_USERNAME }}/rick_and_morty_avicii \
+          --set image.tag=latest \
+          --set service.port=8080
+      env:
+        KUBECONFIG: /etc/rancher/k3s/k3s.yaml
