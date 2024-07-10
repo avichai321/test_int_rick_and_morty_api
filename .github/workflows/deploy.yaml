@@ -10,6 +10,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
       - name: Set up k3s
         run: |
           curl -sfL https://get.k3s.io | sh -s - --docker
