@@ -22,19 +22,6 @@ jobs:
         sudo chmod 644 /etc/rancher/k3s/k3s.yaml
         export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
 
-    - name: Log in to Docker Hub
-      uses: docker/login-action@v2
-      with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
-
-    - name: Build and push Docker image
-      uses: docker/build-push-action@v2
-      with:
-        context: .
-        push: true
-        tags: ${{ secrets.DOCKER_USERNAME }}/rick_and_morty_avicii:latest
-
     - name: Install Helm
       run: |
         curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
@@ -48,3 +35,28 @@ jobs:
           --set service.port=8080
       env:
         KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+
+      - name: Wait for deployment
+        run: kubectl rollout status deployment/rick-and-morty-deploy --timeout=2m
+
+      - name: Test Fetch Characters Endpoint
+      run: |
+        endpoint=$(kubectl get svc rick-and-morty-app -o=jsonpath='{.status.loadBalancer.ingress[0].hostname}')/fetch_char
+        response=$(curl -s -o /dev/null -w "%{http_code}" $endpoint)
+        if [ $response -eq 200 ]; then
+          echo "Fetch Characters endpoint is reachable"
+        else
+          echo "Fetch Characters endpoint returned status $response"
+          exit 1
+        fi
+
+      - name: Test Health Check Endpoint
+        run: |
+          endpoint=$(kubectl get svc rick-and-morty-app -o=jsonpath='{.status.loadBalancer.ingress[0].hostname}')/healthcheck
+          response=$(curl -s -o /dev/null -w "%{http_code}" $endpoint)
+          if [ $response -eq 200 ]; then
+            echo "Health Check endpoint is reachable"
+          else
+            echo "Health Check endpoint returned status $response"
+            exit 1
+          fi
