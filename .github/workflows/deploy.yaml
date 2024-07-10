@@ -33,11 +33,11 @@ jobs:
           KUBECONFIG: /etc/rancher/k3s/k3s.yaml
 
       - name: Wait for deployment
-        run: kubectl rollout status deployment/rick-and-morty-rest-api --timeout=2m
+        run: kubectl rollout status deployment/rick-and-morty-rest-deploy --timeout=2m
 
       - name: Test Fetch Characters Endpoint
         run: |
-          endpoint=$(kubectl get svc rick-and-morty-rest-api -o=jsonpath='{.status.loadBalancer.ingress[0].hostname}')/fetch_char
+          endpoint=$(kubectl get svc rick-and-morty-rest-service -o=jsonpath='{.status.loadBalancer.ingress[0].hostname}')/fetch_char
           response=$(curl -s -o /dev/null -w "%{http_code}" $endpoint)
           if [ $response -eq 200 ]; then
             echo "Fetch Characters endpoint is reachable"
@@ -48,7 +48,7 @@ jobs:
 
       - name: Test Health Check Endpoint
         run: |
-          endpoint=$(kubectl get svc rick-and-morty-rest-api -o=jsonpath='{.status.loadBalancer.ingress[0].hostname}')/healthcheck
+          endpoint=$(kubectl get svc rick-and-morty-rest-service -o=jsonpath='{.status.loadBalancer.ingress[0].hostname}')/healthcheck
           response=$(curl -s -o /dev/null -w "%{http_code}" $endpoint)
           if [ $response -eq 200 ]; then
             echo "Health Check endpoint is reachable"
