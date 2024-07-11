@@ -57,10 +57,12 @@ jobs:
 
       - name: Install NGINX Ingress Controller
         run: |
+          export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
           sudo helm install nginx-ingress ingress-nginx/ingress-nginx --namespace default --create-namespace
           
       - name: Verify Ingress Controller Installation
         run: |
+          export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
           sudo kubectl get pods -n default -l app.kubernetes.io/name=ingress-nginx
       
       - name: Wait for deployment
