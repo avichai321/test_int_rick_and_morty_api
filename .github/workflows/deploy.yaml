@@ -15,7 +15,9 @@ jobs:
 
       - name: Set up k3s
         run: |
-          curl -sfL https://get.k3s.io | sh -s - --docker
+           curl -sfL https://get.k3s.io | sh -s - --docker
+          sudo mkdir -p /etc/rancher/k3s
+          echo "disable: traefik" | sudo tee /etc/rancher/k3s/config.yaml
           sudo chmod 644 /etc/rancher/k3s/k3s.yaml
           export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
       
@@ -35,7 +37,7 @@ jobs:
           helm install rick-and-morty-rest-api ./rick-and-morty-rest-api-0.1.0.tgz \
             --set image.repository=${{ secrets.DOCKER_USERNAME }}/rick_and_morty_avicii \
             --set image.tag=latest \
-            --set service.port=8080
+            --set service.port=80
 
       - name: Wait for deployment
         run: |
@@ -45,7 +47,7 @@ jobs:
       - name: Sleep for 1 Minute
         uses: jakejarvis/wait-action@master
         with:
-          time: '60s'
+          time: '30s'
 
       - name: Check k3s Status After Deploy
         run: |
