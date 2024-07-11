@@ -38,7 +38,6 @@ jobs:
 
       - name: Test Fetch Characters Endpoint
         run: |
-          export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
           endpoint=$(kubectl get svc rick-and-morty-service -o=jsonpath='{.status.loadBalancer.ingress[0].hostname}')/fetch_char
           response=$(curl -s -o /dev/null -w "%{http_code}" $endpoint)
           if [ $response -eq 200 ]; then
@@ -50,7 +49,6 @@ jobs:
 
       - name: Test Health Check Endpoint
         run: |
-          export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
           endpoint=$(kubectl get svc rick-and-morty-service -o=jsonpath='{.status.loadBalancer.ingress[0].hostname}')/healthcheck
           response=$(curl -s -o /dev/null -w "%{http_code}" $endpoint)
           if [ $response -eq 200 ]; then
