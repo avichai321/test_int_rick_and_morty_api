@@ -33,7 +33,7 @@ jobs:
           KUBECONFIG: /etc/rancher/k3s/k3s.yaml
 
       - name: Wait for deployment
-        run: kubectl rollout status deployment/rick-and-morty-rest-deploy --timeout=2m
+        run: kubectl rollout status deployment/rick-and-morty-rest-deploy --timeout=10m
 
       - name: Test Fetch Characters Endpoint
         run: |
