@@ -40,36 +40,20 @@ jobs:
         run: |
           sudo k3s kubectl get nodes
 
-          
-      - name: Install Helm
-        run: |
-          curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
-
-      - name: Add NGINX Ingress Helm repo
-        run: |
-          sudo helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
-          sudo helm repo update
-
-      - name: Verify Helm Repositories
-        run: |
-          sudo helm repo list
-
-      - name: Sleep for 20 Secounds
-        uses: jakejarvis/wait-action@master
-        with:
-          time: '20s'
-
       - name: Install NGINX Ingress Controller
         run: |
-          kubectl create namespace ingress-nginx
-          sudo helm install nginx-ingress ingress-nginx/ingress-nginx --namespace ingress-nginx
-        env:
-          KUBECONFIG: /etc/rancher/k3s/k3s.yaml
-          
-      - name: Verify Ingress Controller Installation
+          kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/cloud/deploy.yaml
+
+      - name: Wait for NGINX Ingress Controller deployment
         run: |
-          export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
-          sudo kubectl get pods -n default -l app.kubernetes.io/name=ingress-nginx
+          kubectl wait --namespace ingress-nginx \
+            --for=condition=ready pod \
+            --selector=app.kubernetes.io/component=controller \
+            --timeout=300s
+
+      - name: Verify NGINX Ingress Controller deployment
+        run: |
+          kubectl get pods --namespace ingress-nginx
       
       - name: Wait for deployment
         run: |
