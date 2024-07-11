@@ -16,10 +16,10 @@ jobs:
       - name: Set up k3s
         run: |
            curl -sfL https://get.k3s.io | sh -s - --docker
-          sudo mkdir -p /etc/rancher/k3s
-          echo "disable: traefik" | sudo tee /etc/rancher/k3s/config.yaml
-          sudo chmod 644 /etc/rancher/k3s/k3s.yaml
-          export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+           sudo mkdir -p /etc/rancher/k3s
+           echo "disable: traefik" | sudo tee /etc/rancher/k3s/config.yaml
+           sudo chmod 644 /etc/rancher/k3s/k3s.yaml
+           export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
       
       - name: Check k3s Status
         run: |
