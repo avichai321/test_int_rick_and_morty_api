@@ -41,8 +41,7 @@ jobs:
         run: |
           export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
           kubectl rollout status deployment/rick-and-morty-deploy --timeout=2m
-          kubectl get ingress
-
+          
       - name: Sleep for 1 Minute
         uses: jakejarvis/wait-action@master
         with:
@@ -53,6 +52,7 @@ jobs:
           sudo k3s kubectl get nodes
           sudo k3s kubectl get pods --all-namespaces
           sudo k3s kubectl get svc --all-namespaces
+          sudo k3s kubectl get ingress
 
       - name: Test Fetch Characters Endpoint
         run: |
