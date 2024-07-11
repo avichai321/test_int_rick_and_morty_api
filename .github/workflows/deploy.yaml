@@ -32,7 +32,10 @@ jobs:
           KUBECONFIG: /etc/rancher/k3s/k3s.yaml
 
       - name: Wait for deployment
-        run: sudo systemctl status k3s
+        run: | 
+          sudo systemctl status k3s 
+          sudo systemctl start k3s
+
 
       - name: Test Fetch Characters Endpoint
         run: |
