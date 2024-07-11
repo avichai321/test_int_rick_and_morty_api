@@ -49,7 +49,7 @@ jobs:
           kubectl wait --namespace ingress-nginx \
             --for=condition=ready pod \
             --selector=app.kubernetes.io/component=controller \
-            --timeout=300s
+            --timeout=300s \
             --validate=false
 
       - name: Verify NGINX Ingress Controller deployment
