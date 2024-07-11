@@ -50,7 +50,6 @@ jobs:
 
       - name: Check k3s Status After Deploy
         run: |
-          sudo k3s kubectl delete pod 
           sudo k3s kubectl get nodes
           sudo k3s kubectl get pods --all-namespaces
           sudo k3s kubectl get svc --all-namespaces
