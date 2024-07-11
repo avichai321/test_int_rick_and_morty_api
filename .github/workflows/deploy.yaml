@@ -38,19 +38,31 @@ jobs:
             --set image.tag=latest \
             --set service.port=80
 
-      - name: Wait for deployment
-        run: |
-          export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
-          kubectl rollout status deployment/rick-and-morty-deploy --timeout=2m
-          
+       - name: Install Helm
+          run: |
+            curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+
       - name: Add NGINX Ingress Helm repo
         run: |
           helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
           helm repo update
 
+      - name: Verify Helm Repositories
+        run: |
+          helm repo list
+
       - name: Install NGINX Ingress Controller
         run: |
-          helm install nginx-ingress ingress-nginx/ingress-nginx
+          helm install nginx-ingress ingress-nginx/ingress-nginx --namespace default --create-namespace
+          
+      - name: Verify Ingress Controller Installation
+        run: |
+          kubectl get pods -n default -l app.kubernetes.io/name=ingress-nginx
+      
+      - name: Wait for deployment
+        run: |
+          export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+          kubectl rollout status deployment/rick-and-morty-deploy --timeout=2m
       
       - name: Sleep for 1 Minute
         uses: jakejarvis/wait-action@master
