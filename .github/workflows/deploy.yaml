@@ -50,6 +50,7 @@ jobs:
             --for=condition=ready pod \
             --selector=app.kubernetes.io/component=controller \
             --timeout=300s
+            --validate=false
 
       - name: Verify NGINX Ingress Controller deployment
         run: |
