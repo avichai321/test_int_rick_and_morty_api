@@ -18,6 +18,12 @@ jobs:
           curl -sfL https://get.k3s.io | sh -s - --docker
           sudo chmod 644 /etc/rancher/k3s/k3s.yaml
           export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+      
+      - name: Check k3s Status
+        run: |
+          sudo k3s kubectl get nodes
+          sudo k3s kubectl get pods --all-namespaces
+          sudo k3s kubectl get svc --all-namespaces
 
       - name: Install Helm
         run: |
@@ -38,7 +44,7 @@ jobs:
 
       - name: Test Fetch Characters Endpoint
         run: |
-          endpoint=$(kubectl get svc rick-and-morty-rest-api -o=jsonpath='{.status.loadBalancer.ingress[0].hostname}')/fetch_char
+          endpoint=$(kubectl get svc rick-and-morty-service -o=jsonpath='{.status.loadBalancer.ingress[0].hostname}')/fetch_char
           response=$(curl -s -o /dev/null -w "%{http_code}" $endpoint)
           if [ $response -eq 200 ]; then
             echo "Fetch Characters endpoint is reachable"
@@ -49,7 +55,7 @@ jobs:
 
       - name: Test Health Check Endpoint
         run: |
-          endpoint=$(kubectl get svc rick-and-morty-rest-api -o=jsonpath='{.status.loadBalancer.ingress[0].hostname}')/healthcheck
+          endpoint=$(kubectl get svc rick-and-morty-service -o=jsonpath='{.status.loadBalancer.ingress[0].hostname}')/healthcheck
           response=$(curl -s -o /dev/null -w "%{http_code}" $endpoint)
           if [ $response -eq 200 ]; then
             echo "Health Check endpoint is reachable"
