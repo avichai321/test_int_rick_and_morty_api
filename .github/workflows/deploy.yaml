@@ -56,8 +56,10 @@ jobs:
 
       - name: Test Fetch Characters Endpoint
         run: |
-          endpoint=$(kubectl get svc rick-and-morty-service -o=jsonpath=http://avicii.local/fetch_char
-          response=$(curl -s -o /dev/null -w "%{http_code}" $endpoint)
+          export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+          endpoint=$(sudo k3s kubectl get ingress rick-and-morty-rest-api -o=jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+          echo "Testing Fetch Characters endpoint: http://$endpoint/fetch_char"
+          response=$(curl -s -o /dev/null -w "%{http_code}" http://$endpoint/fetch_char)
           if [ $response -eq 200 ]; then
             echo "Fetch Characters endpoint is reachable"
           else
@@ -67,14 +69,16 @@ jobs:
 
       - name: Test Health Check Endpoint
         run: |
-          endpoint=$(kubectl get svc rick-and-morty-service -o=jsonpath='http://avicii.local/fetch_char/healthcheck
-          response=$(curl -s -o /dev/null -w "%{http_code}" $endpoint)
+          export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+          endpoint=$(sudo k3s kubectl get ingress rick-and-morty-rest-api -o=jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+          echo "Testing Health Check endpoint: http://$endpoint/healthcheck"
+          response=$(curl -s -o /dev/null -w "%{http_code}" http://$endpoint/healthcheck)
           if [ $response -eq 200 ]; then
             echo "Health Check endpoint is reachable"
           else
             echo "Health Check endpoint returned status $response"
             exit 1
           fi
-
+          
       - name: Stop k3s
         run: sudo k3s-uninstall.sh
