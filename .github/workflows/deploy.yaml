@@ -57,7 +57,7 @@ jobs:
 
       - name: Install NGINX Ingress Controller
         run: |
-          sudo helm install nginx-ingress ingress-nginx/ingress-nginx --namespace default
+          sudo k3s helm install nginx-ingress ingress-nginx/ingress-nginx --namespace default
           
       - name: Verify Ingress Controller Installation
         run: |
