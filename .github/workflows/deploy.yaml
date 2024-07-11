@@ -15,7 +15,7 @@ jobs:
 
       - name: Set up k3s
         run: |
-           curl -sfL https://get.k3s.io | sh -s - --docker --disable=traefik
+           curl -sfL https://get.k3s.io | sh -s - --docker 
            sudo mkdir -p /etc/rancher/k3s
            sudo chmod 644 /etc/rancher/k3s/k3s.yaml
            export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
@@ -41,7 +41,7 @@ jobs:
         run: |
           kubectl get nodes
 
-          
+
       - name: Install Helm
         run: |
           curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
