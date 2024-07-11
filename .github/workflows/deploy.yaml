@@ -42,6 +42,11 @@ jobs:
           export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
           kubectl rollout status deployment/rick-and-morty-deploy --timeout=2m
 
+      - name: Sleep for 3 Minutes
+        uses: jakejarvis/wait-action@master
+        with:
+          time: '180s'
+
       - name: Check k3s Status After Deploy
         run: |
           sudo k3s kubectl get nodes
