@@ -54,6 +54,11 @@ jobs:
         run: |
           sudo helm repo list
 
+      - name: Sleep for 20 Secounds
+        uses: jakejarvis/wait-action@master
+        with:
+          time: '20s'
+
       - name: Install NGINX Ingress Controller
         run: |
           sudo helm install nginx-ingress ingress-nginx/ingress-nginx
