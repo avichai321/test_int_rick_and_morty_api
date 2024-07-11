@@ -15,7 +15,7 @@ jobs:
 
       - name: Set up k3s
         run: |
-           curl -sfL https://get.k3s.io | sh -s - --docker
+           curl -sfL https://get.k3s.io | sh -s - --docker --disable=traefik
            sudo mkdir -p /etc/rancher/k3s
            sudo chmod 644 /etc/rancher/k3s/k3s.yaml
            export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
