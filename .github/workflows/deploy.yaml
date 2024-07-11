@@ -39,8 +39,8 @@ jobs:
             --set service.port=80
 
        - name: Install Helm
-          run: |
-            curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+         run: |
+          curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 
       - name: Add NGINX Ingress Helm repo
         run: |
