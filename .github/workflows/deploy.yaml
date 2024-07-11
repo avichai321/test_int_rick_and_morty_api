@@ -62,7 +62,7 @@ jobs:
       - name: Install NGINX Ingress Controller
         run: |
           kubectl create namespace ingress-nginx
-          helm install nginx-ingress ingress-nginx/ingress-nginx --namespace ingress-nginx
+          sudo helm install nginx-ingress ingress-nginx/ingress-nginx --namespace ingress-nginx
         env:
           KUBECONFIG: /etc/rancher/k3s/k3s.yaml
           
