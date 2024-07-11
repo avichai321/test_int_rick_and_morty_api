@@ -57,7 +57,6 @@ jobs:
 
       - name: Install NGINX Ingress Controller
         run: |
-          export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
           helm install nginx-ingress ingress-nginx/ingress-nginx --namespace default
           
       - name: Verify Ingress Controller Installation
