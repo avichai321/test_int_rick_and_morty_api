@@ -60,8 +60,10 @@ jobs:
           time: '20s'
 
       - name: Install NGINX Ingress Controller
+        env:
+          KUBECONFIG: /etc/rancher/k3s/k3s.yaml
         run: |
-          sudo helm install nginx-ingress ingress-nginx/ingress-nginx
+          sudo helm install nginx-ingress ingress-nginx/ingress-nginx --namespace ingress-nginx
           
       - name: Verify Ingress Controller Installation
         run: |
