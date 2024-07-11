@@ -34,6 +34,8 @@ the application is also can deploy with helm chart
 * the helm chart tgz file is also in the folder you can deploy it with `helm install app ./rick-and-morty-rest-api-0.1.0.tgz`
 * the app will open in browser in http port 80 like the yamls deploy 
 
+
+* git
 # Created By
 
 Avichai Dahan course May 23
