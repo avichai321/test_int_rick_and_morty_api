@@ -52,12 +52,18 @@ jobs:
           sudo k3s kubectl get nodes
           sudo k3s kubectl get pods --all-namespaces
           sudo k3s kubectl get svc --all-namespaces
-          sudo k3s kubectl get ingress
+          sudo k3s kubectl get ingress -A
 
       - name: Test Fetch Characters Endpoint
         run: |
           export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
-          endpoint=$(sudo k3s kubectl get ingress rick-and-morty-rest-api -o=jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+          external_ip=$(sudo k3s kubectl get ingress rick-and-morty-ingress -o=jsonpath='{.status.loadBalancer.ingress[0].ip}')
+          if [ -z "$external_ip" ]; then
+            external_hostname=$(sudo k3s kubectl get ingress rick-and-morty-ingress -o=jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+            endpoint=$external_hostname
+          else
+            endpoint=$external_ip
+          fi
           echo "Testing Fetch Characters endpoint: http://$endpoint/fetch_char"
           response=$(curl -s -o /dev/null -w "%{http_code}" http://$endpoint/fetch_char)
           if [ $response -eq 200 ]; then
@@ -70,7 +76,13 @@ jobs:
       - name: Test Health Check Endpoint
         run: |
           export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
-          endpoint=$(sudo k3s kubectl get ingress rick-and-morty-rest-api -o=jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+          external_ip=$(sudo k3s kubectl get ingress rick-and-morty-ingress -o=jsonpath='{.status.loadBalancer.ingress[0].ip}')
+          if [ -z "$external_ip" ]; then
+            external_hostname=$(sudo k3s kubectl get ingress rick-and-morty-ingress -o=jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+            endpoint=$external_hostname
+          else
+            endpoint=$external_ip
+          fi
           echo "Testing Health Check endpoint: http://$endpoint/healthcheck"
           response=$(curl -s -o /dev/null -w "%{http_code}" http://$endpoint/healthcheck)
           if [ $response -eq 200 ]; then
@@ -79,6 +91,6 @@ jobs:
             echo "Health Check endpoint returned status $response"
             exit 1
           fi
-          
+
       - name: Stop k3s
         run: sudo k3s-uninstall.sh
