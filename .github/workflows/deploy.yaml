@@ -36,12 +36,14 @@ jobs:
             --set image.repository=${{ secrets.DOCKER_USERNAME }}/rick_and_morty_avicii \
             --set image.tag=latest \
             --set service.port=80
+
       - name: Verify Kubernetes Cluster
         run: |
           sudo k3s kubectl get nodes
 
       - name: Install NGINX Ingress Controller
         run: |
+          export KUBECONFIG=/etc/rancher/k3s/k3s.yam
           kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/cloud/deploy.yaml  --validate=false
 
       - name: Wait for NGINX Ingress Controller deployment
