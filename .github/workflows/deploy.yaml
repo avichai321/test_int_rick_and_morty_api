@@ -6,10 +6,10 @@ on:
       - master
 
 jobs:
-  deploy-test:
+  test-endpoints:
     runs-on: ubuntu-latest
 
-    steps: 
+    steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
@@ -25,21 +25,21 @@ jobs:
 
       - name: Deploy to Kubernetes
         run: |
-          helm upgrade --install rick-and-morty-rest-app ./rick-and-morty-rest-api-0.1.0.tgz \
+          export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+          helm upgrade --install rick-and-morty-rest-api ./rick-and-morty-rest-api-0.1.0.tgz \
             --set image.repository=${{ secrets.DOCKER_USERNAME }}/rick_and_morty_avicii \
-            --set image.tag=latest
-        env:
-          KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+            --set image.tag=latest \
+            --set service.port=8080
 
       - name: Wait for deployment
-        run: | 
-          sudo systemctl status k3s 
-          sudo systemctl start k3s
-
+        run: |
+          export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+          kubectl rollout status deployment/rick-and-morty-deploy --timeout=2m
 
       - name: Test Fetch Characters Endpoint
         run: |
-          endpoint=$(kubectl get svc rick-and-morty-rest-service -o=jsonpath='{.status.loadBalancer.ingress[0].hostname}')/fetch_char
+          export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+          endpoint=$(kubectl get svc rick-and-morty-service -o=jsonpath='{.status.loadBalancer.ingress[0].hostname}')/fetch_char
           response=$(curl -s -o /dev/null -w "%{http_code}" $endpoint)
           if [ $response -eq 200 ]; then
             echo "Fetch Characters endpoint is reachable"
@@ -50,7 +50,8 @@ jobs:
 
       - name: Test Health Check Endpoint
         run: |
-          endpoint=$(kubectl get svc rick-and-morty-rest-service -o=jsonpath='{.status.loadBalancer.ingress[0].hostname}')/healthcheck
+          export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+          endpoint=$(kubectl get svc rick-and-morty-service -o=jsonpath='{.status.loadBalancer.ingress[0].hostname}')/healthcheck
           response=$(curl -s -o /dev/null -w "%{http_code}" $endpoint)
           if [ $response -eq 200 ]; then
             echo "Health Check endpoint is reachable"
