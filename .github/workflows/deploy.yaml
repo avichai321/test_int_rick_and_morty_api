@@ -1,4 +1,4 @@
-name: Deploy to k8s github
+name: Deploy to Minikube with Ingress
 
 on:
   push:
@@ -6,24 +6,22 @@ on:
       - master
 
 jobs:
-  test-endpoints:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Set up k3s
+      - name: Set up Minikube
         run: |
-           curl -sfL https://get.k3s.io | sh -s - --docker --disable=traefik
-           sudo chmod 644 /etc/rancher/k3s/k3s.yaml
-           export "KUBECONFIG=/etc/rancher/k3s/k3s.yaml" >> $GITHUB_ENV
-      
-      - name: Check k3s Status
-        run: |
-          sudo k3s kubectl get nodes
-          sudo k3s kubectl get pods --all-namespaces
-          sudo k3s kubectl get svc --all-namespaces
+          sudo apt-get update -y
+          sudo apt-get install -y curl apt-transport-https docker.io
+          curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+          sudo install minikube /usr/local/bin/
+          minikube start --driver=docker --wait=all
+          minikube addons enable ingress
+          echo "KUBECONFIG=$(minikube kubeconfig)" >> $GITHUB_ENV
 
       - name: Install Helm
         run: |
@@ -31,56 +29,33 @@ jobs:
 
       - name: Deploy to Kubernetes
         run: |
-          export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
-          helm install rick-and-morty-rest-api ./rick-and-morty-rest-api-0.1.0.tgz \
+          helm upgrade --install rick-and-morty-rest-api ./rick-and-morty-rest-api-0.1.0.tgz \
             --set image.repository=${{ secrets.DOCKER_USERNAME }}/rick_and_morty_avicii \
             --set image.tag=latest \
             --set service.port=80
+        env:
+          KUBECONFIG: ${{ env.KUBECONFIG }}
 
-      - name: Verify Kubernetes Cluster
-        run: |
-          sudo k3s kubectl get nodes
-
-      - name: Install NGINX Ingress Controller
-        run: |
-          export KUBECONFIG=/etc/rancher/k3s/k3s.yam
-          kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/cloud/deploy.yaml  --validate=false
-
-      - name: Wait for NGINX Ingress Controller deployment
-        run: |
-          kubectl wait --namespace ingress-nginx \
-            --for=condition=ready pod \
-            --selector=app.kubernetes.io/component=controller \
-            --timeout=300s 
-           
-
-      - name: Verify NGINX Ingress Controller deployment
-        run: |
-          kubectl get pods --namespace ingress-nginx
-      
       - name: Wait for deployment
-        run: |
-          export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
-          kubectl rollout status deployment/rick-and-morty-deploy --timeout=2m
-      
+        run: kubectl rollout status deployment/rick-and-morty-deploy --timeout=2m
+
       - name: Sleep for 1 Minute
         uses: jakejarvis/wait-action@master
         with:
-          time: '30s'
+          time: '60s'
 
-      - name: Check k3s Status After Deploy
+      - name: Check Minikube Status After Deploy
         run: |
-          sudo k3s kubectl get nodes
-          sudo k3s kubectl get pods --all-namespaces
-          sudo k3s kubectl get svc --all-namespaces
-          sudo k3s kubectl get ingress -A
+          kubectl get nodes
+          kubectl get pods --all-namespaces
+          kubectl get svc --all-namespaces
+          kubectl get ingress -A
 
       - name: Test Fetch Characters Endpoint
         run: |
-          export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
-          external_ip=$(sudo k3s kubectl get ingress rick-and-morty-ingress -o=jsonpath='{.status.loadBalancer.ingress[0].ip}')
+          external_ip=$(kubectl get ingress rick-and-morty-ingress -o=jsonpath='{.status.loadBalancer.ingress[0].ip}')
           if [ -z "$external_ip" ]; then
-            external_hostname=$(sudo k3s kubectl get ingress rick-and-morty-ingress -o=jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+            external_hostname=$(kubectl get ingress rick-and-morty-ingress -o=jsonpath='{.status.loadBalancer.ingress[0].hostname}')
             endpoint=$external_hostname
           else
             endpoint=$external_ip
@@ -96,10 +71,9 @@ jobs:
 
       - name: Test Health Check Endpoint
         run: |
-          export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
-          external_ip=$(sudo k3s kubectl get ingress rick-and-morty-ingress -o=jsonpath='{.status.loadBalancer.ingress[0].ip}')
+          external_ip=$(kubectl get ingress rick-and-morty-ingress -o=jsonpath='{.status.loadBalancer.ingress[0].ip}')
           if [ -z "$external_ip" ]; then
-            external_hostname=$(sudo k3s kubectl get ingress rick-and-morty-ingress -o=jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+            external_hostname=$(kubectl get ingress rick-and-morty-ingress -o=jsonpath='{.status.loadBalancer.ingress[0].hostname}')
             endpoint=$external_hostname
           else
             endpoint=$external_ip
@@ -113,5 +87,5 @@ jobs:
             exit 1
           fi
 
-      - name: Stop k3s
-        run: sudo k3s-uninstall.sh
+      - name: Stop Minikube
+        run: minikube stop
