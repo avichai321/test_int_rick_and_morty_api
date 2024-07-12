@@ -27,11 +27,16 @@ jobs:
         run: |
           curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
       
-      - name: Sleep for 1 Minute
+      - name: Sleep for 30 seconds
         uses: jakejarvis/wait-action@master
         with:
           time: '30s'
-          
+      
+      - name: Add Minikube IP to /etc/hosts
+        run: |
+          minikube_ip=$(minikube ip)
+          echo "$minikube_ip avicii.local" | sudo tee -a /etc/hosts
+
       - name: Check Minikube Status After Deploy
         run: |
           kubectl get nodes
@@ -52,20 +57,15 @@ jobs:
       - name: Wait for deployment
         run: kubectl rollout status deployment/rick-and-morty-deploy --timeout=2m
 
-      - name: Sleep for 1 Minute
+      - name: Sleep for 30 seconds
         uses: jakejarvis/wait-action@master
         with:
-          time: '60s'
+          time: '30s'
 
       - name: Test Fetch Characters Endpoint
         run: |
           external_ip=$(kubectl get ingress rick-and-morty-ingress -o=jsonpath='{.status.loadBalancer.ingress[0].ip}')
-          if [ -z "$external_ip" ]; then
-            external_hostname=$(kubectl get ingress rick-and-morty-ingress -o=jsonpath='{.status.loadBalancer.ingress[0].hostname}')
-            endpoint=$external_hostname
-          else
-            endpoint=$external_ip
-          fi
+          endpoint="avicii.local"
           echo "Testing Fetch Characters endpoint: http://$endpoint/fetch_char"
           response=$(curl -s -o /dev/null -w "%{http_code}" http://$endpoint/fetch_char)
           if [ $response -eq 200 ]; then
@@ -78,12 +78,7 @@ jobs:
       - name: Test Health Check Endpoint
         run: |
           external_ip=$(kubectl get ingress rick-and-morty-ingress -o=jsonpath='{.status.loadBalancer.ingress[0].ip}')
-          if [ -z "$external_ip" ]; then
-            external_hostname=$(kubectl get ingress rick-and-morty-ingress -o=jsonpath='{.status.loadBalancer.ingress[0].hostname}')
-            endpoint=$external_hostname
-          else
-            endpoint=$external_ip
-          fi
+          endpoint="avicii.local"
           echo "Testing Health Check endpoint: http://$endpoint/healthcheck"
           response=$(curl -s -o /dev/null -w "%{http_code}" http://$endpoint/healthcheck)
           if [ $response -eq 200 ]; then
