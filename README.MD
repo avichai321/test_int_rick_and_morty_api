@@ -16,6 +16,8 @@ The main files in this repository are:
 
 * `Dockerfile` specifies how the application is built and packaged
 * `Yamls folder` contains yaml to deploy the app with k8s (Tested with minikube)
+* `Helm folder` contains the app in helm chart
+* `.github/workflows` contain the workflow yaml for github action
 
 
 # Yamls
