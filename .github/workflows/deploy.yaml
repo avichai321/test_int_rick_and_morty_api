@@ -26,6 +26,14 @@ jobs:
       - name: Install Helm
         run: |
           curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+     
+     - name: Wait for NGINX Ingress Controller to be ready
+        run: |
+          export KUBECONFIG=$(minikube kubeconfig)
+          kubectl wait --namespace kube-system \
+            --for=condition=ready pod \
+            --selector=app.kubernetes.io/name=ingress-nginx \
+            --timeout=300s
 
       - name: Deploy to Kubernetes
         run: |
@@ -35,15 +43,6 @@ jobs:
             --set service.port=80
         env:
           KUBECONFIG: ${{ env.KUBECONFIG }}
-
-      - name: Wait for NGINX Ingress Controller to be ready
-        run: |
-          export KUBECONFIG=$(minikube kubeconfig)
-          kubectl wait --namespace kube-system \
-            --for=condition=ready pod \
-            --selector=app.kubernetes.io/name=ingress-nginx \
-            --timeout=300s
-
 
       - name: Wait for deployment
         run: kubectl rollout status deployment/rick-and-morty-deploy --timeout=2m
