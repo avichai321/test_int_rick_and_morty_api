@@ -27,7 +27,7 @@ jobs:
         run: |
           curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
      
-     -  name: Wait for NGINX Ingress Controller to be ready
+      - name: Wait for NGINX Ingress Controller to be ready
         run: |
           export KUBECONFIG=$(minikube kubeconfig)
           kubectl wait --namespace kube-system \
