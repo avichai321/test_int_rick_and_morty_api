@@ -27,6 +27,11 @@ jobs:
         run: |
           curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
       
+      - name: Sleep for 1 Minute
+        uses: jakejarvis/wait-action@master
+        with:
+          time: '30s'
+          
       - name: Check Minikube Status After Deploy
         run: |
           kubectl get nodes
@@ -34,14 +39,6 @@ jobs:
           kubectl get svc --all-namespaces
           kubectl get ingress -A
       
-      - name: Wait for NGINX Ingress Controller to be ready
-        run: |
-          export KUBECONFIG=~/.kube/config)
-          kubectl wait --namespace kube-system \
-            --for=condition=ready pod \
-            --selector=app.kubernetes.io/name=ingress-nginx \
-            --timeout=300s
-
       - name: Deploy to Kubernetes
         run: |
           export "KUBECONFIG=$(KUBECONFIG=~/.kube/config)"
