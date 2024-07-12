@@ -29,7 +29,6 @@ jobs:
      
       - name: Wait for NGINX Ingress Controller to be ready
         run: |
-          export KUBECONFIG=$(minikube kubeconfig)
           kubectl wait --namespace kube-system \
             --for=condition=ready pod \
             --selector=app.kubernetes.io/name=ingress-nginx \
