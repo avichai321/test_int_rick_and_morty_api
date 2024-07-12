@@ -21,7 +21,7 @@ jobs:
           sudo install minikube /usr/local/bin/
           minikube start --driver=docker --wait=all
           minikube addons enable ingress
-          echo "KUBECONFIG=$(minikube kubeconfig)" >> $GITHUB_ENV
+          echo "KUBECONFIG=$(KUBECONFIG=~/.kube/config)" >> $GITHUB_ENV
 
       - name: Install Helm
         run: |
@@ -29,6 +29,7 @@ jobs:
      
       - name: Wait for NGINX Ingress Controller to be ready
         run: |
+          export KUBECONFIG=~/.kube/config)
           kubectl wait --namespace kube-system \
             --for=condition=ready pod \
             --selector=app.kubernetes.io/name=ingress-nginx \
@@ -36,6 +37,7 @@ jobs:
 
       - name: Deploy to Kubernetes
         run: |
+          export "KUBECONFIG=$(KUBECONFIG=~/.kube/config)"
           helm install rick-and-morty-rest-api ./rick-and-morty-rest-api-0.1.0.tgz \
             --set image.repository=${{ secrets.DOCKER_USERNAME }}/rick_and_morty_avicii \
             --set image.tag=latest \
