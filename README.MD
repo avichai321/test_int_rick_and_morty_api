@@ -38,7 +38,7 @@ the application is also can deploy with helm chart
 # Github Action
  i build github action who check if the endpoind of my app are reachable and the code is okay
 
-there are few importent stages in this workflow
+there are few importent stages in this workflow and one job who called deploy who contians this stages
 
 * `Checkout repository` = the simple check for the repo before start
 
