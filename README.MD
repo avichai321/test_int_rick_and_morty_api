@@ -35,7 +35,36 @@ the application is also can deploy with helm chart
 * the app will open in browser in http port 80 like the yamls deploy 
 
 
-* git
+# Github Action
+ i build github action who check if the endpoind of my app are reachable and the code is okay
+
+there are few importent stages in this workflow
+
+* `Checkout repository` = the simple check for the repo before start
+
+* `Set up Minikube` - set a minikube eniviroment
+
+* `Install Helm` - install helm for using helm commands
+
+* `Sleep for 30 seconds` - gave some time to minikube enviroment to fully implemted
+
+* `Add Minikube IP to /etc/hosts` - to use my local domain i need to implent the domain name in /etc/host with minikube ip
+
+* `Check Minikube Status After Deploy` - check again all the components of the minikube app
+
+* `Deploy to Kubernetes` - deploy the helm chart of my app to the minikube enviroment
+
+* `Wait for deployment` - wait until all the pods of the app is running
+
+* `Sleep for 30 seconds` - give time to the ingress service in my app to fully upload and get the ingress ip
+
+* `Test Fetch Characters Endpoint` - check if the path /fetch_char is reachable 
+
+* `Test Health Check Endpoint` - check if the path /healthcheck is reachable
+
+* `Stop Minikube` finish all and shutdown the minikube
+
+
 # Created By
 
 Avichai Dahan course May 23
